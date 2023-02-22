@@ -30,8 +30,6 @@ contract DeeLance is ERC20, Ownable {
 
     address public deadWallet = 0x000000000000000000000000000000000000dEaD;
 
-    mapping(address => bool) public _isBlacklisted;
-
     IPinkAntiBot public pinkAntiBot;
 
     uint256 public buyFee = 0;
@@ -206,10 +204,6 @@ contract DeeLance is ERC20, Ownable {
         _setAutomatedMarketMakerPair(pair, value);
     }
 
-    function blacklistAddress(address account, bool value) external onlyOwner{
-        _isBlacklisted[account] = value;
-    }
-
 
     function _setAutomatedMarketMakerPair(address pair, bool value) private {
         require(automatedMarketMakerPairs[pair] != value, "DeeLance: Automated market maker pair is already set to that value");
@@ -229,7 +223,6 @@ contract DeeLance is ERC20, Ownable {
     ) internal override {
         require(from != address(0), "ERC20: transfer from the zero address");
         require(to != address(0), "ERC20: transfer to the zero address");
-        require(!_isBlacklisted[from] && !_isBlacklisted[to], 'Blacklisted address');
         require( _isExcludedFromFees[from] || _isExcludedFromFees[to]  || amount <= maxtranscation,"Max transaction Limit Exceeds!");
         if (antiBotEnabled) {
       pinkAntiBot.onPreTransferCheck(from, to, amount);
